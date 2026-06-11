@@ -3577,22 +3577,9 @@ def health_document_analysis_keyboard() -> InlineKeyboardMarkup:
                     "Crear Mi Plan",
                     callback_data=HEALTH_CREATE_PLAN_CALLBACK,
                 )
-            ],
-            [
-                InlineKeyboardButton(
-                    "Preparar consulta médica",
-                    callback_data=HEALTH_PREPARE_DOCTOR_CALLBACK,
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    "Revisar analítica y genética",
-                    callback_data=HEALTH_REVIEW_DATA_CALLBACK,
-                )
-            ],
+            ]
         ]
     )
-
 
 def health_last_document_context_file(client_dir: Path | None = None) -> Path:
     base = client_dir or active_client_dir()
@@ -3926,10 +3913,10 @@ Required analysis:
    - overall cardiovascular-risk assessment;
    - personal cholesterol and glucose objectives;
    - whether ApoB, Lp(a), HbA1c, blood pressure or other tests are useful.
-9. End by inviting the user to choose:
-   - Crear Mi Plan;
-   - Preparar consulta médica;
-   - Revisar analítica y genética.
+9. End briefly by saying that the next step is to create Mi Plan.
+Do not list several choices.
+Do not ask the user to type a preference.
+The Telegram interface will show one real button: Crear Mi Plan.
 
 Safety:
 - Do not diagnose.
@@ -4128,7 +4115,7 @@ async def analyze_uploaded_documents_callback_handler(
         await reply_message_text_in_chunks(message, answer)
 
         await message.reply_text(
-            "Elige el siguiente paso:",
+            "Siguiente paso:",
             reply_markup=health_document_analysis_keyboard(),
         )
 
@@ -9081,6 +9068,7 @@ async def handle_upload_anonymized_documents_button(
     )
 
 async def handle_health_create_plan_button(update, context):
+    activate_client_from_update(update)
     query = update.callback_query
     await query.answer()
     await clear_clicked_inline_keyboard(query)
@@ -9135,6 +9123,7 @@ Use Spanish and keep it practical.
 
 
 async def handle_health_prepare_doctor_button(update, context):
+    activate_client_from_update(update)
     query = update.callback_query
     await query.answer()
     await clear_clicked_inline_keyboard(query)
@@ -9178,6 +9167,7 @@ Use Spanish.
 
 
 async def handle_health_review_data_button(update, context):
+    activate_client_from_update(update)
     query = update.callback_query
     await query.answer()
     await clear_clicked_inline_keyboard(query)
