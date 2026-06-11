@@ -3574,9 +3574,22 @@ def extract_latest_upload_session() -> tuple[Path | None, str]:
 
 
 HEALTH_CREATE_PLAN_CALLBACK = "health:create_mi_plan"
+HEALTH_FIRST_FOLLOWUP_CALLBACK = "health:create_first_followup"
 HEALTH_PREPARE_DOCTOR_CALLBACK = "health:prepare_doctor"
 HEALTH_REVIEW_DATA_CALLBACK = "health:review_data"
 
+
+def health_first_followup_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    "Crear seguimiento — mañana 08:00",
+                    callback_data=HEALTH_FIRST_FOLLOWUP_CALLBACK,
+                )
+            ]
+        ]
+    )
 
 def health_document_analysis_keyboard() -> InlineKeyboardMarkup:
     button = InlineKeyboardButton(
@@ -9118,6 +9131,14 @@ Mi Plan must include:
 Do not prescribe medication, supplements or HRT.
 Do not define medical targets.
 Use Spanish and keep it practical.
+
+At the end:
+- address the user only as Laura;
+- do not invent another name;
+- say that eCoach can check in tomorrow morning;
+- do not claim that the follow-up has already been created;
+- do not print a fake button label;
+- the Telegram interface will show the real follow-up button separately.
 """
 
     await answer_callback_with_skill(
@@ -9125,7 +9146,7 @@ Use Spanish and keep it practical.
         skill_name="manage_physical_wellbeing",
         task="Create Laura's practical Mi Plan from the analysed health documents.",
         facts=facts,
-        reply_markup=None,
+        reply_markup=health_first_followup_keyboard(),
     )
 
 
@@ -9217,6 +9238,71 @@ Use Spanish.
         reply_markup=health_document_analysis_keyboard(),
     )
 
+async def handle_health_first_followup_button(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+) -> None:
+    activate_client_from_update(update)
+
+    query = update.callback_query
+    await query.answer()
+    await clear_clicked_inline_keyboard(query)
+
+    ensure_client_files()
+    ensure_followup_triggers_file()
+
+    tomorrow = today_app() + timedelta(days=1)
+    followup_date = tomorrow.strftime("%Y-%m-%d")
+    followup_time = "08:00"
+
+    trigger = {
+        "date": followup_date,
+        "time": followup_time,
+        "type": "physical_wellbeing_checkin",
+        "message_template": (
+            "Buenos días, Laura. Antes de seguir con el plan, quiero saber cómo estás.\n\n"
+            "Tus registros recientes sugieren que has dormido peor y que tu frecuencia "
+            "cardiaca en reposo y tu HRV se han movido respecto a tus valores habituales. "
+            "Un wearable no permite saber la causa ni hacer un diagnóstico.\n\n"
+            "Sé que la situación emocional con ese hombre puede estar influyendo, pero "
+            "quiero comprobar si hay algo más: ¿has notado palpitaciones persistentes, "
+            "mareo, dolor en el pecho, falta de aire, fiebre, enfermedad reciente, "
+            "deshidratación, alcohol, cambios de medicación o algún otro cambio?\n\n"
+            "Si el cambio persiste o aparece algún síntoma preocupante, sería prudente "
+            "consultarlo con un profesional. Si tu pulsera permite registrar un ECG, "
+            "puedes guardar una lectura para enseñársela al médico, pero no sustituye "
+            "una valoración clínica.\n\n"
+            "Y sobre Mi Plan: ¿pudiste hacer ayer una sola acción pequeña, aunque fueran "
+            "cinco o diez minutos?"
+        ),
+        "reason": "Primer seguimiento de Mi Plan — eCoach Bienestar Físico",
+        "source": "health_mi_plan_first_followup_button",
+        "sensitivity": "medium",
+        "requires_private_context": True,
+        "status": "pending",
+    }
+
+    saved_followups = save_immediate_followup_triggers(
+        [trigger],
+        source="health_mi_plan_first_followup_button",
+    )
+
+    if not saved_followups:
+        await query.message.reply_text(
+            "No he podido crear el seguimiento. "
+            "Inténtalo de nuevo o revisa /scheduler_status.",
+            reply_markup=MAIN_KEYBOARD,
+        )
+        return
+
+    await query.message.reply_text(
+        "Listo, Laura. He creado un seguimiento para mañana a las 08:00.\n\n"
+        "Comprobaremos cómo estás, cómo has dormido, si los datos de tu pulsera "
+        "siguen fuera de tu patrón habitual y si pudiste empezar con una acción pequeña.\n\n"
+        "No será un examen. Ajustaremos el plan sin juicio.",
+        reply_markup=MAIN_KEYBOARD,
+    )
+
 def main() -> None:
     app = (
         ApplicationBuilder()
@@ -9280,6 +9366,14 @@ def main() -> None:
         )
     )
     app.add_handler(MessageHandler(filters.Document.ALL, handle_uploaded_document))
+
+
+    app.add_handler(
+        CallbackQueryHandler(
+            handle_health_first_followup_button,
+            pattern=f"^{HEALTH_FIRST_FOLLOWUP_CALLBACK}$",
+        )
+    )
 
     app.add_handler(
         CallbackQueryHandler(
