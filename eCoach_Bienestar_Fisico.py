@@ -9197,7 +9197,7 @@ def main() -> None:
     
     app.job_queue.run_daily(
         scheduled_run_followups,
-        time=time(
+        time=dt_time(
             hour=PROACTIVE_SCHEDULER_HOUR,
             minute=PROACTIVE_SCHEDULER_MINUTE,
             tzinfo=ZoneInfo(APP_TIMEZONE),
