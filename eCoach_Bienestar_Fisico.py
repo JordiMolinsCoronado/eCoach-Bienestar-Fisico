@@ -12,6 +12,7 @@ from contextvars import ContextVar
 from datetime import datetime, date, time as dt_time, timedelta
 from zoneinfo import ZoneInfo
 from pathlib import Path
+import fitz  # PyMuPDF
 
 from dotenv import load_dotenv
 from google import genai
@@ -1592,7 +1593,7 @@ def parse_followup_date(date_text: str) -> date | None:
         return None
 
 
-def parse_followup_time(time_text: str) -> time | None:
+def parse_followup_time(time_text: str) -> dt_time | None:
     """Parse a seguimiento time in HH:MM format."""
     if not time_text:
         return None
@@ -3480,11 +3481,35 @@ def extract_plain_text_file(path: Path) -> str:
         return f"[ERROR] Could not read text file {path.name}: {exc}"
 
 
+def extract_pdf_text_with_pymupdf(pdf_path: Path) -> str:
+    """
+    Extract readable text from a PDF using PyMuPDF.
+
+    This is used for laboratory and medical reports whose layout may not
+    be extracted correctly by simpler PDF libraries.
+    """
+    document = fitz.open(str(pdf_path))
+
+    try:
+        pages = []
+
+        for page_number, page in enumerate(document, start=1):
+            page_text = page.get_text("text") or ""
+
+            pages.append(
+                f"\n===== PÁGINA {page_number} =====\n{page_text.strip()}"
+            )
+
+        return "\n".join(pages).strip()
+
+    finally:
+        document.close()
+
 def extract_uploaded_file(path: Path) -> str:
     suffix = path.suffix.lower()
 
     if suffix == ".pdf":
-        return extract_pdf_text_and_tables(path)
+        return extract_pdf_text_with_pymupdf(path)
 
     if suffix == ".xlsx":
         return extract_xlsx_text(path)
