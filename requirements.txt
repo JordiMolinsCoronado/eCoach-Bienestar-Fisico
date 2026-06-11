@@ -1,0 +1,8 @@
+﻿python-dotenv
+google-genai
+openai
+python-telegram-bot[job-queue]
+pypdf
+openpyxl
+pandas
+

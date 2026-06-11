@@ -1,0 +1,1 @@
+﻿Seguimiento marcado como completado.
