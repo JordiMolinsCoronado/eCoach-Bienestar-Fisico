@@ -3570,15 +3570,13 @@ HEALTH_REVIEW_DATA_CALLBACK = "health:review_data"
 
 
 def health_document_analysis_keyboard() -> InlineKeyboardMarkup:
+    button = InlineKeyboardButton(
+        text="Crear Mi Plan",
+        callback_data="health:create_mi_plan",
+    )
+
     return InlineKeyboardMarkup(
-        [
-            [
-                InlineKeyboardButton(
-                    "Crear Mi Plan",
-                    callback_data=HEALTH_CREATE_PLAN_CALLBACK,
-                )
-            ]
-        ]
+        inline_keyboard=[[button]]
     )
 
 def health_last_document_context_file(client_dir: Path | None = None) -> Path:
