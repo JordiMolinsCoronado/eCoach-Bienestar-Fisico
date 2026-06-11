@@ -8,7 +8,6 @@ backup = path.with_suffix(".py.before_demo_one_minute_followup")
 shutil.copy2(path, backup)
 print(f"Backup created: {backup}")
 
-
 old_schedule = '''    tomorrow = today_app() + timedelta(days=1)
     followup_date = tomorrow.strftime("%Y-%m-%d")
     followup_time = "08:00"'''
@@ -17,59 +16,24 @@ new_schedule = '''    demo_followup_at = now_app() + timedelta(minutes=1)
     followup_date = demo_followup_at.strftime("%Y-%m-%d")
     followup_time = demo_followup_at.strftime("%H:%M")'''
 
-count = text.count(old_schedule)
-
-if count != 1:
-    raise SystemExit(
-        f"Expected exactly one tomorrow-at-08:00 schedule block, found {count}."
-    )
+if old_schedule in text:
+    text = text.replace(old_schedule, new_schedule, 1)
+    print("Changed schedule to one minute.")
+elif new_schedule in text:
+    print("One-minute schedule already active.")
+else:
+    raise SystemExit("Could not find the follow-up schedule block.")
 
 text = text.replace(
-    old_schedule,
-    new_schedule,
-    1,
+    '"Crear seguimiento — mañana 08:00"',
+    '"Activar seguimiento de demo — en 1 minuto"',
 )
 
-old_button = '''"Crear seguimiento — mañana 08:00"'''
-new_button = '''"Activar seguimiento de demo — en 1 minuto"'''
-
-if old_button in text:
-    text = text.replace(
-        old_button,
-        new_button,
-        1,
-    )
-    print("Changed follow-up button text.")
-else:
-    print("Original button text not found; schedule will still be changed.")
-
-
-old_confirmation = '''"Listo, Laura. He creado un seguimiento para mañana a las 08:00.\\n\\n"'''
-
-new_confirmation = '''"Listo, Laura. Para esta demostración, haré el seguimiento dentro de aproximadamente un minuto.\\n\\n"'''
-
-if old_confirmation in text:
-    text = text.replace(
-        old_confirmation,
-        new_confirmation,
-        1,
-    )
-    print("Changed confirmation message.")
-else:
-    print("Original confirmation text not found; inspect it if necessary.")
-
-
-old_plan_ending = '''- say eCoach can check in the following morning;'''
-new_plan_ending = '''- say that, for this demonstration, eCoach can check in in approximately one minute;'''
-
-if old_plan_ending in text:
-    text = text.replace(
-        old_plan_ending,
-        new_plan_ending,
-        1,
-    )
-
+text = text.replace(
+    '"Listo, Laura. He creado un seguimiento para mañana a las 08:00.\\n\\n"',
+    '"Listo, Laura. Para esta demostración, haré el seguimiento dentro de aproximadamente un minuto.\\n\\n"',
+)
 
 path.write_text(text, encoding="utf-8")
 
-print("Demo follow-up will now be scheduled one minute after the button is clicked.")
+print("One-minute demo follow-up enabled.")
