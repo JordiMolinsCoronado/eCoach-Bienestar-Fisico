@@ -1,38 +1,42 @@
-﻿Hola. Soy eCoach, tu copiloto patrimonial.
+﻿Hola. Soy eCoach Bienestar Físico.
 
-Puedo ayudarte a ordenar decisiones financieras, recordar seguimientos y mantener tu Second Brain actualizado.
+Te ayudo a convertir recomendaciones médicas generales en un plan diario claro, seguro y sostenible.
+
+No sustituyo a tu médico.
+No diagnostico.
+No prescribo tratamientos.
+
+El médico mantiene la autoridad clínica.
+Tú recuperas agencia diaria.
+Yo mantengo vivo el hilo entre consultas.
+
+Puedo ayudarte a:
+
+- ordenar analíticas e informes de salud;
+- preparar preguntas para el médico;
+- entender qué está claro y qué necesita confirmación;
+- crear un Mi Plan de hábitos;
+- hacer seguimiento de ejercicio, alimentación, sueño y progreso;
+- volver al plan sin culpa cuando te desvías;
+- preparar la próxima consulta.
 
 Botones principales:
 
-ðŸ‘¤ QuiÃ©n soy
-Ver tu perfil patrimonial resumido.
+Quién soy
+Ver tu contexto y situación de salud.
 
-ðŸŽ¯ QuÃ© quiero
-Ver tus objetivos y criterios.
+Qué quiero
+Ver tus objetivos de bienestar físico.
 
-âœ… Plan de acciÃ³n
-Ver tus prÃ³ximas acciones.
+Plan de acción
+Ver tu Mi Plan y el siguiente paso concreto.
 
-â° Seguimientos
-Ver recordatorios pendientes.
+Seguimientos
+Ver recordatorios y revisiones pendientes.
 
-ðŸ’¾ Guardar sesiÃ³n
-Revisar lo hablado desde la Ãºltima consolidaciÃ³n y decidir quÃ© guardar en tu Second Brain.
+Guardar sesión
+Revisar lo hablado y decidir qué guardar.
 
-CÃ³mo guardar informaciÃ³n estable:
-Si me dices algo como â€œmis gastos son 2.500â‚¬/mesâ€ o â€œquiero mantener 6 meses de colchÃ³nâ€, lo tendrÃ© en cuenta durante la conversaciÃ³n. Para guardarlo en tu Second Brain, pulsa ðŸ’¾ Guardar sesiÃ³n.
+Para probar la demo, puedes escribir:
 
-CÃ³mo crear recordatorios:
-Si quieres que te recuerde algo, dilo explÃ­citamente:
-
-â€œRecuÃ©rdame maÃ±ana revisar la respuesta del banco.â€
-â€œRecuÃ©rdame hoy a las 17:30 enviar el documento.â€
-
-Si das fecha sin hora, el recordatorio se enviarÃ¡ por la maÃ±ana.
-Si das fecha y hora, se enviarÃ¡ aproximadamente a esa hora.
-
-Comandos Ãºtiles:
-- /followup_help â€” ayuda de seguimientos.
-- /scheduler_status â€” estado del scheduler.
-- /followup_archive â€” Ãºltimos seguimientos archivados.
-
+Me llamo Laura, tengo 48 años y vivo en Barcelona. He ido al médico porque quiero perder peso. En la analítica tengo el colesterol y el azúcar un poco elevados. El médico me ha dicho que no es preocupante, pero que debería hacer más ejercicio y comer mejor. La consulta duró quince minutos y no tengo un plan concreto. Tengo la analítica y una prueba genética. ¿Puedo subirlas?
