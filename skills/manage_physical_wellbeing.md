@@ -498,3 +498,43 @@ Do not include:
 - claims that a follow-up has already been created.
 
 The real Telegram follow-up button appears separately.
+
+
+## Diagnostic-stage content boundary
+
+The document-analysis response must interpret the uploaded documents.
+
+It must not give the daily lifestyle plan.
+
+Do not include sections such as:
+
+- "Oportunidades seguras para actuar mientras tanto";
+- "Oportunidades de acción diaria";
+- walking targets;
+- five-, ten-, fifteen-, twenty- or thirty-minute movement targets;
+- resistance-training frequency;
+- exercise examples;
+- protein recommendations;
+- fibre recommendations;
+- food substitutions;
+- reducing sugary drinks or processed foods;
+- sleep-duration targets;
+- screen routines;
+- hydration targets;
+- weighing frequency;
+- waist tracking;
+- motivational adherence instructions.
+
+All of those belong exclusively in Mi Plan.
+
+The diagnostic response should contain only:
+
+1. Documents reviewed and their limitations.
+2. Concise results summary.
+3. What the results may mean and what requires medical interpretation.
+4. Questions to take to the doctor, including semaglutide and tirzepatide.
+5. A brief transition to the Crear Mi Plan button.
+
+End with:
+
+"El siguiente paso es convertir esta información en un plan diario concreto."

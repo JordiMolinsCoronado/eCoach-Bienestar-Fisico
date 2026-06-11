@@ -8957,7 +8957,7 @@ async def handle_upload_anonymized_documents_button(
         "Antes de enviarlos, comprueba que has eliminado o tapado nombre, "
         "DNI/NIE, dirección, teléfono, email, número de historia clínica, "
         "códigos QR o de barras y firmas.\n\n"
-        "Cuando hayas subido todos los documentos, te indicaré el siguiente paso.",
+        "",
         reply_markup=MAIN_KEYBOARD,
     )
 
