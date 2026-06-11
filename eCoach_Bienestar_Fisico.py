@@ -3326,6 +3326,64 @@ def extract_pdf_text_with_pymupdf(pdf_path: Path) -> str:
     finally:
         document.close()
 
+def extract_genetic_markers_only(path: Path) -> str:
+    """
+    For large direct-to-consumer genome exports, keep only the APOE
+    markers needed by the current Bienestar Físico demo.
+
+    Never send the entire raw genome file to an LLM.
+    """
+    target_markers = {"rs429358", "rs7412"}
+    found_lines: list[str] = []
+
+    try:
+        with path.open(
+            "r",
+            encoding="utf-8",
+            errors="ignore",
+        ) as handle:
+            for raw_line in handle:
+                line = raw_line.strip()
+
+                if not line or line.startswith("#"):
+                    continue
+
+                first_field = line.split()[0] if line.split() else ""
+
+                if first_field in target_markers:
+                    found_lines.append(line)
+
+                if len(found_lines) >= len(target_markers):
+                    found_ids = {
+                        item.split()[0]
+                        for item in found_lines
+                        if item.split()
+                    }
+
+                    if target_markers.issubset(found_ids):
+                        break
+
+    except Exception as exc:
+        return f"[ERROR] No se pudo leer el archivo genético {path.name}: {exc}"
+
+    if not found_lines:
+        return (
+            f"# Extracto genético: {path.name}\n\n"
+            "No se encontraron los marcadores APOE rs429358 y rs7412."
+        )
+
+    return (
+        f"# Extracto genético seguro: {path.name}\n\n"
+        "Solo se han extraído localmente los marcadores necesarios. "
+        "El archivo genómico completo no se ha enviado al modelo.\n\n"
+        + "\n".join(found_lines)
+        + "\n\n"
+        "LIMITACIONES:\n"
+        "- Procede de una prueba directa al consumidor.\n"
+        "- No constituye un diagnóstico clínico.\n"
+        "- Puede requerir confirmación en un laboratorio clínico."
+    )
+
 def extract_uploaded_file(path: Path) -> str:
     suffix = path.suffix.lower()
 
@@ -3338,7 +3396,15 @@ def extract_uploaded_file(path: Path) -> str:
     if suffix == ".csv":
         return extract_csv_text(path)
 
-    if suffix in {".txt", ".md"}:
+    if suffix == ".txt":
+        file_size = path.stat().st_size
+
+        if file_size > 500_000:
+            return extract_genetic_markers_only(path)
+
+        return extract_plain_text_file(path)
+
+    if suffix == ".md":
         return extract_plain_text_file(path)
 
     return f"[UNSUPPORTED] {path.name}"
@@ -3693,7 +3759,36 @@ def schedule_upload_summary_notice(update: Update, context: ContextTypes.DEFAULT
     )
 
 
+def compact_health_document_context(
+    extracted_context: str,
+    max_characters: int = 80000,
+) -> str:
+    """
+    Final safety boundary before any health-document context reaches
+    an LLM provider.
+    """
+    context = (extracted_context or "").strip()
+
+    if len(context) <= max_characters:
+        return context
+
+    first_size = 50000
+    last_size = max_characters - first_size
+
+    return (
+        context[:first_size]
+        + "\n\n"
+        + "[CONTENIDO INTERMEDIO OMITIDO POR LÍMITE TÉCNICO]"
+        + "\n\n"
+        + context[-last_size:]
+    )
+
 def generate_health_document_analysis(extracted_context: str) -> str:
+    extracted_context = compact_health_document_context(
+        extracted_context,
+        max_characters=80000,
+    )
+
     facts = f"""
 The user uploaded anonymised health documents.
 
@@ -4785,16 +4880,7 @@ El médico mantiene la autoridad clínica.
 Tú recuperas agencia diaria.
 Yo mantengo vivo el hilo entre consultas.
 
-Puedo ayudarte a:
-
-- ordenar analíticas e informes de salud;
-- preparar preguntas para el médico;
-- entender qué está claro y qué necesita confirmación;
-- crear un Mi Plan de hábitos;
-- hacer seguimiento de ejercicio, alimentación, sueño y progreso;
-- preparar mejor la próxima consulta.
-
-Botones principales:
+Puedo ayudarte con:
 
 Quién soy
 Ver tu contexto y situación de salud.
@@ -4806,14 +4892,7 @@ Plan de acción
 Ver tu Mi Plan y el siguiente paso concreto.
 
 Seguimientos
-Ver recordatorios y revisiones pendientes.
-
-Guardar sesión
-Revisar lo hablado y decidir qué guardar.
-
-Para probar la demo, puedes escribir:
-
-Me llamo Laura, tengo 48 años y vivo en Barcelona. He ido al médico porque quiero perder peso. En la analítica tengo el colesterol y el azúcar un poco elevados. La consulta duró quince minutos y no tengo un plan concreto. Tengo la analítica y una prueba genética. ¿Puedo subirlas?"""
+Ver recordatorios y revisiones pendientes."""
 
     await message.reply_text(
         welcome,
@@ -8642,6 +8721,19 @@ Important:
 - No detailed facts/stories list yet.
 - Those details come later, when Laura writes during real activation.
 - No follow-up button yet.
+
+
+Critical stage separation:
+
+- The previous document-analysis message already explained LDL, APOE, glucose, kidney function and clinical limitations.
+- Do not repeat the diagnostic summary.
+- Do not thank Laura for sharing documents.
+- Start directly with "# Mi Plan para Laura".
+- Focus on concrete daily action.
+- Include semaglutide and tirzepatide as topics to discuss with the doctor because BMI is approximately 31.
+- Do not repeat the complete numbered doctor-question list.
+- Refer back briefly to the questions prepared in the previous analysis.
+- Do not sign with "Un abrazo", "eCoach" or similar.
 """
 
     await answer_callback_with_skill(
