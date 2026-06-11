@@ -5366,24 +5366,15 @@ def normalize_public_enrichment_text(text: str) -> str:
     return without_accents
 
 
+
 def is_public_enrichment_intent(text: str) -> bool:
-    normalized = normalize_public_enrichment_text(text)
+    """
+    Disabled in eCoach Bienestar Físico.
 
-    return (
-        ("fuentes publicas" in normalized)
-        or ("informacion publica" in normalized)
-        or ("completa" in normalized and "public" in normalized)
-        or ("completar" in normalized and "public" in normalized)
-        or ("busca" in normalized and "public" in normalized)
-        or ("buscar" in normalized and "public" in normalized)
-        or ("actualiza" in normalized and "fondos" in normalized)
-        or ("actualizar" in normalized and "fondos" in normalized)
-        or ("kid" in normalized)
-        or ("dfi" in normalized)
-        or ("ter" in normalized)
-        or ("ocf" in normalized)
-    )
-
+    Health messages must never be interpreted as requests to enrich
+    investment funds, KIDs, TERs, OCFs or ISINs.
+    """
+    return False
 
 def save_last_portfolio_isins_for_public_enrichment(client_dir: Path, isins: list[str]) -> None:
     if not isins:
@@ -5656,36 +5647,15 @@ def build_public_enrichment_message(isins: list[str]) -> str:
         "3. Preparar un mensaje para el banco pidiendo los datos privados que faltan."
     )
 
+
 async def handle_public_enrichment_command(update, context):
-    user_text = ""
-    try:
-        user_text = (update.message.text or "").strip()
-    except Exception:
-        user_text = ""
+    """
+    Compatibility guard for inherited Patrimonio registrations.
 
-    if user_text and await try_handle_ecoach_control_message(update, context, user_text):
-        return
-
-    user_id = update.effective_user.id
-    client_dir = Path("ClientData") / f"telegram_{user_id}"
-
-    isins = extract_recent_isins_for_public_enrichment(client_dir)
-    save_last_portfolio_isins_for_public_enrichment(client_dir, isins)
-
-    if not isins:
-        await update.message.reply_text(
-            "Puedo intentar completar informaci\u00f3n p\u00fablica, pero ahora mismo no encuentro los ISINs de la \u00faltima cartera analizada.\n\n"
-            "Por favor, sube de nuevo los documentos o pulsa primero \u201c\U0001f4c4 Analizar documentos\u201d.",
-            reply_markup=public_enrichment_keyboard(),
-        )
-        return
-
-    msg = build_public_enrichment_message(isins)
-
-
-    await update.message.reply_text(msg, reply_markup=public_enrichment_keyboard())
-
-
+    If an old handler sends a Bienestar Físico message here, forward it
+    to the normal health free-text flow instead of producing a funds reply.
+    """
+    await handle_free_text(update, context)
 
 def build_private_bank_data_request_message(isins: list[str]) -> str:
     fund_lines = []
