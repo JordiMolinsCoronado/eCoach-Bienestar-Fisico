@@ -3462,7 +3462,7 @@ def health_first_followup_keyboard() -> InlineKeyboardMarkup:
         [
             [
                 InlineKeyboardButton(
-                    "Crear seguimiento — mañana 08:00",
+                    "Activar seguimiento de demo — en 1 minuto",
                     callback_data=HEALTH_FIRST_FOLLOWUP_CALLBACK,
                 )
             ]
@@ -9125,9 +9125,9 @@ async def handle_health_first_followup_button(
     ensure_client_files()
     ensure_followup_triggers_file()
 
-    tomorrow = today_app() + timedelta(days=1)
-    followup_date = tomorrow.strftime("%Y-%m-%d")
-    followup_time = "08:00"
+    demo_followup_at = now_app() + timedelta(minutes=1)
+    followup_date = demo_followup_at.strftime("%Y-%m-%d")
+    followup_time = demo_followup_at.strftime("%H:%M")
 
     trigger = {
         "date": followup_date,
@@ -9170,7 +9170,7 @@ async def handle_health_first_followup_button(
         return
 
     await query.message.reply_text(
-        "Listo, Laura. He creado un seguimiento para mañana a las 08:00.\n\n"
+        "Listo, Laura. Para esta demostración, haré el seguimiento dentro de aproximadamente un minuto.\n\n"
         "Comprobaremos cómo estás, cómo has dormido, si los datos de tu pulsera "
         "siguen fuera de tu patrón habitual y si pudiste empezar con una acción pequeña.\n\n"
         "No será un examen. Ajustaremos el plan sin juicio.",
