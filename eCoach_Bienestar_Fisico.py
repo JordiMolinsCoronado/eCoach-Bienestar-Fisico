@@ -4919,47 +4919,62 @@ Comandos útiles:
     )
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    welcome = """Hola. Soy eCoach Relaciones.
+async def start(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+) -> None:
+    activate_client_from_update(update)
 
-Puedo ayudarte a practicar agencia relacional entre sesiones de terapia.
+    message = update.effective_message
+    if message is None:
+        return
 
-No sustituyo a tu psicologa.
-No decido por ti.
-Te ayudo a pausar, separar hechos de historias, recordar tus valores y elegir el siguiente paso con mas claridad.
+    welcome = """Hola. Soy eCoach Bienestar Físico.
 
-Idea central:
+Te ayudo a convertir recomendaciones médicas generales en un plan diario claro, seguro y sostenible.
 
-No persecucion ansiosa.
-No juicio delegado.
-Agencia relacional guiada.
+No sustituyo a tu médico.
+No diagnostico.
+No prescribo tratamientos.
+
+El médico mantiene la autoridad clínica.
+Tú recuperas agencia diaria.
+Yo mantengo vivo el hilo entre consultas.
+
+Puedo ayudarte a:
+
+- ordenar analíticas e informes de salud;
+- preparar preguntas para el médico;
+- entender qué está claro y qué necesita confirmación;
+- crear un Mi Plan de hábitos;
+- hacer seguimiento de ejercicio, alimentación, sueño y progreso;
+- preparar mejor la próxima consulta.
 
 Botones principales:
 
-Quien soy
-Ver el resumen de tu situacion y patron relacional.
+Quién soy
+Ver tu contexto y situación de salud.
 
-Que quiero
-Ver tus valores, criterios y objetivo relacional actual.
+Qué quiero
+Ver tus objetivos de bienestar físico.
 
-Plan de accion
-Ver tu Mi Plan y el siguiente paso claro.
+Plan de acción
+Ver tu Mi Plan y el siguiente paso concreto.
 
 Seguimientos
-Ver recordatorios y check-ins pendientes.
+Ver recordatorios y revisiones pendientes.
 
-Guardar sesion
-Revisar lo hablado y decidir que guardar.
+Guardar sesión
+Revisar lo hablado y decidir qué guardar.
 
 Para probar la demo, puedes escribir:
 
-Estoy saliendo con un hombre que me gusta.
-Cuando estamos juntos, todo parece bien.
-Pero entre citas es muy ambiguo.
-A veces escribe con carino, pero otras desaparece.
-Mi psicologa me dice que no persiga y que observe si hay coherencia, pero cuando me activo se me olvida todo.
-"""
-    await update.message.reply_text(welcome, reply_markup=MAIN_KEYBOARD)
+Me llamo Laura, tengo 48 años y vivo en Barcelona. He ido al médico porque quiero perder peso. En la analítica tengo el colesterol y el azúcar un poco elevados. La consulta duró quince minutos y no tengo un plan concreto. Tengo la analítica y una prueba genética. ¿Puedo subirlas?"""
+
+    await message.reply_text(
+        welcome,
+        reply_markup=MAIN_KEYBOARD,
+    )
 
 async def show_quien_soy(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     activate_client_from_update(update)
