@@ -1028,7 +1028,16 @@ async def answer_callback_with_skill(
     except Exception:
         pass
 
-    await query.message.reply_text(answer, reply_markup=reply_markup)
+    await reply_message_text_in_chunks(
+        query.message,
+        answer,
+    )
+
+    if reply_markup is not None:
+        await query.message.reply_text(
+            "Siguiente paso:",
+            reply_markup=reply_markup,
+        )
 
 
 def anonymized_documents_keyboard() -> InlineKeyboardMarkup:
