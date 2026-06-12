@@ -1,0 +1,15 @@
+﻿EXTRACTO GENÉTICO ANONIMIZADO PARA DEMOSTRACIÓN
+
+Origen:
+Archivo de genotipado directo al consumidor realizado originalmente con finalidad de ascendencia.
+
+Marcadores APOE encontrados:
+rs429358	19	45411941	CT
+rs7412	19	45412079	CC
+
+LIMITACIONES
+
+- Este extracto no es un diagnóstico.
+- Procede de una prueba directa al consumidor.
+- Cualquier resultado relevante para la salud puede requerir confirmación clínica.
+- Debe interpretarse junto con otros factores por un profesional sanitario.
